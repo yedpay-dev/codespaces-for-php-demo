@@ -1,5 +1,5 @@
 <?php
-if (isset($_GET["url"])){
+if (isset($_GET["url"])) {
 	// TODO: sanitize user input! This is extremely insecure
 	$url = $_GET["url"];
 } else {
@@ -28,13 +28,13 @@ $img_imagick->clear();
 
 <?php
 $img_gd = imagecreatefromstring($input);
-if(!imageistruecolor($img_gd)) imagepalettetotruecolor($img_gd);
+if (!imageistruecolor($img_gd)) imagepalettetotruecolor($img_gd);
 imagefilter($img_gd, IMG_FILTER_GRAYSCALE);
 imagefilter($img_gd, IMG_FILTER_CONTRAST, -100);
 // imagefilter($img_gd, IMG_FILTER_BRIGHTNESS, 255 / 2);
 imagetruecolortopalette($img_gd, false, 2);
 
-ob_start(); 
+ob_start();
 imagebmp($img_gd, null, false);
 $img_gd_data = ob_get_contents();
 ob_end_clean();
@@ -42,11 +42,14 @@ imagedestroy($img_gd);
 ?>
 
 <html>
-	<head>
-	</head>
-	<body>
-	<img src="data:image/jpg;base64, <?=base64_encode($input);?>"/>
-	<img src="data:image/bmp;base64, <?=base64_encode($img_imagick_data);?>"/>
-	<img src="data:image/bmp;base64, <?=base64_encode($img_gd_data);?>"/>
-	</body>
+
+<head>
+</head>
+
+<body>
+	<img src="data:image/jpg;base64,<?= base64_encode($input); ?>" />
+	<img src="data:image/bmp;base64,<?= base64_encode($img_imagick_data); ?>" />
+	<img src="data:image/bmp;base64,<?= base64_encode($img_gd_data); ?>" />
+</body>
+
 </html>
