@@ -27,6 +27,16 @@ $img_imagick->clear();
 ?>
 
 <?php
+$img_dithered_imagick = new Imagick();
+$img_dithered_imagick->readImageBlob($input);
+$img_dithered_imagick->quantizeImage(2, Imagick::COLORSPACE_GRAY, 1, TRUE, FALSE);
+$img_dithered_imagick->setImageFormat('bmp');
+$img_dithered_imagick->setImageCompression(imagick::COMPRESSION_NO);
+$img_dithered_imagick_data = $img_dithered_imagick->getImageBlob();
+$img_dithered_imagick->clear();
+?>
+
+<?php
 $img_gd = imagecreatefromstring($input);
 if (!imageistruecolor($img_gd)) imagepalettetotruecolor($img_gd);
 imagefilter($img_gd, IMG_FILTER_GRAYSCALE);
@@ -47,9 +57,10 @@ imagedestroy($img_gd);
 </head>
 
 <body>
-	<img src="data:image/jpg;base64,<?= base64_encode($input); ?>" />
-	<img src="data:image/bmp;base64,<?= base64_encode($img_imagick_data); ?>" />
-	<img src="data:image/bmp;base64,<?= base64_encode($img_gd_data); ?>" />
+	<img src="data:image;base64,<?= base64_encode($input); ?>" />
+	<img src="data:image;base64,<?= base64_encode($img_dithered_imagick_data); ?>" />
+	<img src="data:image;base64,<?= base64_encode($img_imagick_data); ?>" />
+	<img src="data:image;base64,<?= base64_encode($img_gd_data); ?>" />
 </body>
 
 </html>
