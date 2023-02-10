@@ -20,6 +20,11 @@ curl_close($curl);
 $img_imagick = new Imagick();
 $img_imagick->readImageBlob($input);
 
+// Resize the image
+if (isset($_GET['resize']) && is_numeric($_GET['resize']) && intval($_GET['resize']) > 0) {
+	$img_imagick->adaptiveResizeImage(intval($_GET['resize']), intval($_GET['resize']), Imagick::INTERPOLATE_BILINEAR, 0);
+}
+
 // Convert the image to the gray colorspace
 // https://imagemagick.org/script/command-line-options.php#colors 
 // When converting an image from color to grayscale, it is more efficient to convert the image to the gray colorspace before reducing the number of colors.
