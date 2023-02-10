@@ -19,10 +19,32 @@ curl_close($curl);
 <?php
 $img_imagick = new Imagick();
 $img_imagick->readImageBlob($input);
-$img_imagick->quantizeImage(2, Imagick::COLORSPACE_GRAY, 1, FALSE, FALSE);
+
+// Convert the image to the gray colorspace
+// https://imagemagick.org/script/command-line-options.php#colors 
+// When converting an image from color to grayscale, it is more efficient to convert the image to the gray colorspace before reducing the number of colors.
+$img_imagick->transformImageColorspace(Imagick::COLORSPACE_GRAY);
+
+// Important: posterize must be ran before quantize
+// Reduce the image to a limited number of color levels per channel (Gray colorspace only have one channel)
+// https://imagemagick.org/script/command-line-options.php#posterize
+$img_imagick->posterizeImage(2, FALSE);
+
+// Prepare a 1-bit bmp image
+
+// Reduce colors using this colorspace
+// https://imagemagick.org/script/command-line-options.php#quantize
+$img_imagick->quantizeImage(2, Imagick::COLORSPACE_GRAY, 0, FALSE, FALSE);
+
+// Convert the image to a reduced color format
 $img_imagick->setImageFormat('bmp');
+$img_imagick->setImageType(Imagick::IMGTYPE_BILEVEL);
 $img_imagick->setImageCompression(imagick::COMPRESSION_NO);
+
+// Export the image
 $img_imagick_data = $img_imagick->getImageBlob();
+
+// Cleanup the image
 $img_imagick->clear();
 ?>
 
