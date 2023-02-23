@@ -3,7 +3,7 @@ if (isset($_GET["url"])) {
 	// TODO: sanitize user input! This is extremely insecure
 	$url = $_GET["url"];
 } else {
-	$url = 'https://picsum.photos/200/300';
+	$url = 'https://picsum.photos/384/384';
 }
 
 $curl = curl_init();
@@ -54,13 +54,18 @@ $img_imagick->clear();
 ?>
 
 <?php
-$img_dithered_imagick = new Imagick();
-$img_dithered_imagick->readImageBlob($input);
-$img_dithered_imagick->quantizeImage(2, Imagick::COLORSPACE_GRAY, 1, TRUE, FALSE);
-$img_dithered_imagick->setImageFormat('bmp');
-$img_dithered_imagick->setImageCompression(imagick::COMPRESSION_NO);
-$img_dithered_imagick_data = $img_dithered_imagick->getImageBlob();
-$img_dithered_imagick->clear();
+$img_imagick->readImageBlob($img_imagick_data);
+$img_imagick->setImageFormat('png');
+$img_imagick->setImageType(Imagick::IMGTYPE_BILEVEL);
+$img_imagick_png_data = $img_imagick->getImageBlob();
+$img_imagick->clear();
+?>
+
+<?php
+$img_imagick->readImageBlob($img_imagick_data);
+$img_imagick->setImageFormat('jpg');
+$img_imagick_jpg_data = $img_imagick->getImageBlob();
+$img_imagick->clear();
 ?>
 
 <?php
@@ -84,10 +89,11 @@ imagedestroy($img_gd);
 </head>
 
 <body>
-	<img src="data:image;base64,<?= base64_encode($input); ?>" />
-	<img src="data:image;base64,<?= base64_encode($img_dithered_imagick_data); ?>" />
-	<img src="data:image;base64,<?= base64_encode($img_imagick_data); ?>" />
-	<img src="data:image;base64,<?= base64_encode($img_gd_data); ?>" />
+	<img src="data:image;base64,<?= base64_encode($input); ?>" alt="original"/>
+	<img src="data:image;base64,<?= base64_encode($img_imagick_png_data); ?>" alt="png"/>
+	<img src="data:image;base64,<?= base64_encode($img_imagick_jpg_data); ?>" alt="jpg"/>
+	<img src="data:image;base64,<?= base64_encode($img_imagick_data); ?>" alt="bmp"/>
+	<img src="data:image;base64,<?= base64_encode($img_gd_data); ?>" alt="gd-bmp"/>
 </body>
 
 </html>
